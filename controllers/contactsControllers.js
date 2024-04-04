@@ -6,11 +6,6 @@ import {
   updateContactById,
 } from "../services/contactsServices.js";
 import HttpError from "../helpers/HttpError.js";
-import validateBody from "../helpers/validateBody.js";
-import {
-  createContactSchema,
-  updateContactSchema,
-} from "../schemas/contactsSchemas.js";
 
 export const getAllContacts = async (req, res, next) => {
   try {
@@ -62,10 +57,6 @@ export const updateContact = async (req, res, next) => {
   try {
     const { id } = req.params;
     const newData = req.body;
-
-    // if (Object.keys(newData).length === 0) {
-    //   throw HttpError(400, "Body must have at least one field");
-    // }
 
     const data = await updateContactById(id, newData);
     if (!data) {
