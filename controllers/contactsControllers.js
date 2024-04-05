@@ -7,6 +7,8 @@ import {
 } from "../services/contactsServices.js";
 import HttpError from "../helpers/HttpError.js";
 
+// mongodb+srv://anyasemonenko:<password>@03-mongodb.2ojitka.mongodb.net/
+
 export const getAllContacts = async (req, res, next) => {
   try {
     const data = await listContacts();
