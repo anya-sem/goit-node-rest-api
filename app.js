@@ -2,11 +2,10 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import mongoose from "mongoose";
-
+import dotenv from "dotenv";
 import contactsRouter from "./routes/contactsRouter.js";
 
-const DB_HOST =
-  "mongodb+srv://anyasemonenko:JPpeOrfE0Nam70CD@03-mongodb.2ojitka.mongodb.net/?retryWrites=true&w=majority&appName=03-mongodb";
+dotenv.config();
 
 const app = express();
 
@@ -27,10 +26,10 @@ app.use((err, req, res, next) => {
 
 mongoose.set("strictQuery", true);
 mongoose
-  .connect(DB_HOST)
+  .connect(process.env.DB_HOST)
   .then(() => {
     app.listen(3000, () => {
-      console.log("Server is running. Use our API on port: 3000");
+      console.log("Server is running. Database connection successful.");
     });
   })
   .catch((error) => {
