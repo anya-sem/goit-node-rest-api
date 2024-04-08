@@ -1,11 +1,3 @@
-// import {
-//   listContacts,
-//   getContactById,
-//   removeContact,
-//   addContact,
-//   updateContactById,
-//   updateStatusContact,
-// } from "../services/contactsServices.js";
 import HttpError from "../helpers/HttpError.js";
 import { Contact } from "../models/contactModel.js";
 
@@ -60,7 +52,6 @@ export const updateContact = async (req, res, next) => {
     const { id } = req.params;
     const newData = req.body;
 
-    //req.body
     const data = await Contact.findByIdAndUpdate({ _id: id }, newData, {
       new: true,
     });
