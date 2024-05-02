@@ -1,11 +1,19 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import gravatar from "gravatar";
+import Jimp from "jimp";
 import HttpError from "../helpers/HttpError.js";
 import { User } from "../models/userModel.js";
 
 dotenv.config();
 const { SECRET_KEY } = process.env;
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const avatarsPath = path.join(__dirname, "..", "public", "avatars");
 
 export const register = async (req, res, next) => {
   try {
@@ -16,8 +24,13 @@ export const register = async (req, res, next) => {
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
+    const avatarURL = gravatar.url(email);
 
-    const newUser = await User.create({ ...req.body, password: hashPassword });
+    const newUser = await User.create({
+      ...req.body,
+      password: hashPassword,
+      avatarURL,
+    });
 
     res.status(201).json({
       email: newUser.email,
@@ -74,6 +87,29 @@ export const logout = async (req, res, next) => {
     await User.findByIdAndUpdate(_id, { token: "" });
 
     res.status(204).json();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateAvatar = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+
+    const { path: tmpUpload, originalname } = req.file;
+
+    const image = await Jimp.read(tmpUpload);
+    await image.resize(250, 250);
+
+    const filename = `${_id}_${originalname}`;
+    const resultUpload = path.join(avatarsPath, filename);
+
+    await image.writeAsync(resultUpload);
+
+    const avatarURL = path.join("avatars", filename);
+    await User.findByIdAndUpdate(_id, { avatarURL });
+
+    res.status(200).json({ avatarURL });
   } catch (error) {
     next(error);
   }
